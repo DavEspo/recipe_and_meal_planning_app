@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'database_helper.dart';
 
 void main() {
   runApp(const MyApp());
@@ -7,17 +8,69 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Recipe & Meal Planning App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const LoginPage(title: 'Login Screen'),
-      // home: const RPage(title: 'L',)
+      home: const WelcomePage(),
+    );
+  }
+}
+
+class WelcomePage extends StatelessWidget {
+  const WelcomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("By: David Espinosa and John Pham"),
+        centerTitle: true,
+        backgroundColor: Colors.grey,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              "Welcome to Recipe & Meal Planning Application",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SignupPage()),
+                );
+              },
+              child: const Text("Sign Up"),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LoginPage(title: 'Login Screen'),
+                  ),
+                );
+              },
+              child: const Text("Go to Login"),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                textStyle: const TextStyle(fontSize: 20),
+                backgroundColor: Colors.grey,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -32,9 +85,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final FormKey = GlobalKey<FormState>();
-  TextEditingController email = TextEditingController();
-  TextEditingController password = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController email = TextEditingController();
+  final TextEditingController password = TextEditingController();
+  final dbHelper = DatabaseHelper();
 
   @override
   Widget build(BuildContext context) {
@@ -44,226 +98,290 @@ class _LoginPageState extends State<LoginPage> {
         title: Text(widget.title),
       ),
       body: Form(
-        key: FormKey,
+        key: _formKey,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
                 child: TextFormField(
                   controller: email,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: "Email"
+                    labelText: "Email",
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Enter your email";
-                    }
-                    return null;
-                  },
-                )
+                  validator: _validateInput,
+                ),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
                 child: TextFormField(
                   controller: password,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: "Password"
+                    labelText: "Password",
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Enter your password";
-                    }
-                    return null;
-                  },
-                )
+                  obscureText: true,
+                  validator: _validateInput,
+                ),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
                 child: Center(
                   child: ElevatedButton(
-                    onPressed: () {
-                      if (FormKey.currentState!.validate()) {
-                        if (email.text == "1" && password.text == "1") {
-                          Navigator.push(
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        final userList = await dbHelper.fetchUser(email.text, password.text);
+                        if (userList.isNotEmpty) {
+                          Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(
-                              builder: (context) => HomePage()
-                            )
+                            MaterialPageRoute(builder: (context) => const HomePage()),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Wrong email or password')),
                           );
                         }
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Wrong username or password'
-                            )
-                          )
-                        );
                       }
                     },
-                    child: Text("Submit")
-                  )
-                )
+                    child: const Text("Submit"),
+                  ),
+                ),
               ),
             ],
           ),
-        )
-      )
+        ),
+      ),
     );
+  }
+
+  String? _validateInput(String? value) {
+    if (value == null || value.isEmpty) {
+      return "This field cannot be empty";
+    }
+    return null;
   }
 }
 
-class HomePage extends StatelessWidget {
+class SignupPage extends StatefulWidget {
+  const SignupPage({super.key});
+
+  @override
+  State<SignupPage> createState() => _SignupPageState();
+}
+
+class _SignupPageState extends State<SignupPage> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final dbHelper = DatabaseHelper();
+
+  void _signup() async {
+    if (_formKey.currentState!.validate()) {
+      Map<String, dynamic> user = {
+        DatabaseHelper.columnFirstName: _firstNameController.text,
+        DatabaseHelper.columnLastName: _lastNameController.text,
+        DatabaseHelper.columnEmail: _emailController.text,
+        DatabaseHelper.columnPassword: _passwordController.text,
+      };
+
+      try {
+        final id = await dbHelper.insertUser(user);
+        if (id > 0) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Signup successful!')),
+          );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginPage(title: 'Login Screen')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Error during signup.')),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error: Could not sign up.')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Home Screen"),
+        title: const Text("Sign Up"),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _firstNameController,
+                decoration: const InputDecoration(labelText: 'First Name'),
+                validator: _validateInput,
+              ),
+              TextFormField(
+                controller: _lastNameController,
+                decoration: const InputDecoration(labelText: 'Last Name'),
+                validator: _validateInput,
+              ),
+              TextFormField(
+                controller: _emailController,
+                decoration: const InputDecoration(labelText: 'Email'),
+                validator: _validateInput,
+              ),
+              TextFormField(
+                controller: _passwordController,
+                decoration: const InputDecoration(labelText: 'Password'),
+                obscureText: true,
+                validator: _validateInput,
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _signup,
+                child: const Text('Sign Up'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String? _validateInput(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'This field cannot be empty';
+    }
+    return null;
+  }
+}
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Home Screen"),
         centerTitle: true,
-        backgroundColor: Colors.red
+        backgroundColor: Colors.red,
       ),
       body: Column(
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.push(
-                      context, MaterialPageRoute(
-                        builder: (context) {
-                          return RecipeScreen();
-                        }
-                      )
+                      context,
+                      MaterialPageRoute(builder: (context) => RecipeScreen()),
                     );
                   },
-                  child: Text(
+                  child: const Text(
                     "Recipe Screen",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 25
-                    ),
-                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white, fontSize: 25),
                   ),
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    fixedSize: Size(175,150),
-                    backgroundColor: Colors.blue
-                  )
+                    fixedSize: const Size(175, 150),
+                    backgroundColor: Colors.blue, // Color for Recipe Screen
+                  ),
                 ),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
+                padding: const EdgeInsets.symmetric(vertical: 20),
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.push(
-                      context, MaterialPageRoute(
-                        builder: (context) {
-                          return MealPlanScreen();
-                        }
-                      )
+                      context,
+                      MaterialPageRoute(builder: (context) => MealPlanScreen()),
                     );
                   },
-                  child: Text(
-                    "Meal Plan Screen",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 25
-                    ),
-                    textAlign: TextAlign.center,
+                  child: const Text(
+                    "Meal Planning Screen",
+                    style: TextStyle(color: Colors.white, fontSize: 25),
                   ),
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    fixedSize: Size(175,150),
-                    backgroundColor: Colors.purple
-                  )
+                    fixedSize: const Size(175, 150),
+                    backgroundColor: Colors.green, // Color for Meal Planning Screen
+                  ),
                 ),
               ),
-            ]
+            ],
           ),
+          // Add Favorite and Settings buttons with different colors
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.push(
-                      context, MaterialPageRoute(
-                        builder: (context) {
-                          return FavoriteScreen();
-                        }
-                      )
+                      context,
+                      MaterialPageRoute(builder: (context) => FavoriteScreen()),
                     );
                   },
-                  child: Text(
+                  child: const Text(
                     "Favorite Screen",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 25
-                    ),
-                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white, fontSize: 25),
                   ),
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    fixedSize: Size(175,150),
-                    backgroundColor: Colors.green
-                  )
+                    fixedSize: const Size(175, 150),
+                    backgroundColor: Colors.orange, // Color for Favorite Screen
+                  ),
                 ),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(),
+                padding: const EdgeInsets.symmetric(vertical: 20),
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.push(
-                      context, MaterialPageRoute(
-                        builder: (context) {
-                          return SettingsScreen();
-                        }
-                      )
+                      context,
+                      MaterialPageRoute(builder: (context) => SettingsScreen()),
                     );
                   },
-                  child: Text(
+                  child: const Text(
                     "Settings Screen",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 25
-                    ),
-                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white, fontSize: 25),
                   ),
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    fixedSize: Size(175,150),
-                    backgroundColor: Colors.orange
-                  )
+                    fixedSize: const Size(175, 150),
+                    backgroundColor: Colors.purple, // Color for Settings Screen
+                  ),
                 ),
               ),
-            ]
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text("Logout")
+            ],
           ),
         ],
-      )
+      ),
     );
   }
 }
+
 
 class RecipeScreen extends StatelessWidget {
   @override
@@ -277,63 +395,24 @@ class RecipeScreen extends StatelessWidget {
       body: ListView(
         scrollDirection: Axis.vertical,
         children: <Widget>[
-          const ListTile(
-            // leading: Icon(Icons.map),
-            // trailing: IconButton(
-            //   icon: Icon(Icons.add),
-            //   onPressed: () {
-                
-            //   }
-            // ),
-            title: Text("Salad")
-          ),
-          const ListTile(
-            trailing: Icon(Icons.add),
-            title: Text("Sandwich")
-          ),
-          const ListTile(
-            trailing: Icon(Icons.add),
-            title: Text("Hamburger")
-          ),
-          const ListTile(
-            trailing: Icon(Icons.add),
-            title: Text("HotDog")
-          ),
-          const ListTile(
-            trailing: Icon(Icons.add),
-            title: Text("Fish")
-          ),
-          const ListTile(
-            trailing: Icon(Icons.add),
-            title: Text("Shrimp")
-          ),
-          const ListTile(
-            trailing: Icon(Icons.add),
-            title: Text("Tacos")
-          ),
-          const ListTile(
-            trailing: Icon(Icons.add),
-            title: Text("Chicken Wings")
-          ),
-          const ListTile(
-            trailing: Icon(Icons.add),
-            title: Text("Rice")
-          ),
-          const ListTile(
-            trailing: Icon(Icons.add),
-            title: Text("Spaghetti")
-          ),
+          const ListTile(title: Text("Salad")),
+          const ListTile(title: Text("Sandwich"), trailing: Icon(Icons.add)),
+          const ListTile(title: Text("Hamburger"), trailing: Icon(Icons.add)),
+          const ListTile(title: Text("Hot Dog"), trailing: Icon(Icons.add)),
+          const ListTile(title: Text("Fish"), trailing: Icon(Icons.add)),
+          const ListTile(title: Text("Shrimp"), trailing: Icon(Icons.add)),
+          const ListTile(title: Text("Tacos"), trailing: Icon(Icons.add)),
+          const ListTile(title: Text("Chicken Wings"), trailing: Icon(Icons.add)),
+          const ListTile(title: Text("Rice"), trailing: Icon(Icons.add)),
+          const ListTile(title: Text("Spaghetti"), trailing: Icon(Icons.add)),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
             },
-            child: const Text("Back to Home Screen")
+            child: const Text("Back to Home Screen"),
           )
         ],
       ),
-          
-      //   ],
-      // ),
     );
   }
 }
@@ -349,13 +428,11 @@ class MealPlanScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          // ListView.builder(
-          //   itemBuilder: itemBuilder),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
             },
-            child: Text("Back to Home Screen")
+            child: Text("Back to Home Screen"),
           )
         ],
       ),
@@ -378,7 +455,7 @@ class FavoriteScreen extends StatelessWidget {
             onPressed: () {
               Navigator.pop(context);
             },
-            child: Text("Back to Home Screen")
+            child: Text("Back to Home Screen"),
           )
         ],
       ),
@@ -401,7 +478,7 @@ class SettingsScreen extends StatelessWidget {
             onPressed: () {
               Navigator.pop(context);
             },
-            child: Text("Back to Home Screen")
+            child: Text("Back to Home Screen"),
           )
         ],
       ),
