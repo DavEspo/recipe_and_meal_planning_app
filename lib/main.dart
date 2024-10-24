@@ -474,11 +474,11 @@ class MealPlanScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          const SizedBox(height: 20), // Adds some space
+          const SizedBox(height: 20),
           Expanded(
             child: ListView(
               padding: const EdgeInsets.all(16.0),
-              children: _buildDaySections(context), // Pass context here
+              children: _buildDaySections(context),
             ),
           ),
           ElevatedButton(
@@ -492,48 +492,46 @@ class MealPlanScreen extends StatelessWidget {
     );
   }
 
-  // Build a section for each day
-  List<Widget> _buildDaySections(BuildContext context) { // Accept context
+  List<Widget> _buildDaySections(BuildContext context) {
     List<Widget> daySections = [];
-    List<String> favorites = FavoritesManager.favorites; // Get favorites
-
     const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
     for (String day in daysOfWeek) {
-      daySections.add(_buildDaySection(day, favorites, context)); // Pass context here
+      daySections.add(_buildDaySection(day, context));
     }
     return daySections;
   }
 
-  // Helper method to build each day's section
-  Widget _buildDaySection(String day, List<String> favorites, BuildContext context) { // Accept context
+  Widget _buildDaySection(String day, BuildContext context) {
+    List<String> mealPlanRecipes = MealPlanManager.getMealPlan(day);
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
         children: [
           ListTile(
             title: Text(day, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-            subtitle: Text('Favorites for $day'),
+            subtitle: Text('Meals for $day'),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
-              children: favorites.isNotEmpty
-                  ? favorites.map((recipe) {
+              children: mealPlanRecipes.isNotEmpty
+                  ? mealPlanRecipes.map((recipe) {
                       return ListTile(
                         title: Text(recipe),
                         trailing: IconButton(
                           icon: const Icon(Icons.remove),
                           onPressed: () {
-                            FavoritesManager.removeFavorite(recipe);
+                            MealPlanManager.removeFromMealPlan(day, recipe);
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('$recipe removed from favorites!')),
+                              SnackBar(content: Text('$recipe removed from $day meal plan!')),
                             );
                           },
                         ),
                       );
                     }).toList()
-                  : [const Text('No favorite recipes added.')], // Properly format the else case
+                  : [const Text('No recipes added for this day.')],
             ),
           ),
         ],
@@ -544,9 +542,15 @@ class MealPlanScreen extends StatelessWidget {
 
 
 
-
-class FavoriteScreen extends StatelessWidget {
+class FavoriteScreen extends StatefulWidget {
   const FavoriteScreen({super.key});
+
+  @override
+  State<FavoriteScreen> createState() => _FavoriteScreenState();
+}
+
+class _FavoriteScreenState extends State<FavoriteScreen> {
+  String? selectedDay;
 
   @override
   Widget build(BuildContext context) {
@@ -556,25 +560,71 @@ class FavoriteScreen extends StatelessWidget {
         centerTitle: true,
         backgroundColor: Colors.red,
       ),
-      body: ListView.builder(
-        itemCount: FavoritesManager.favorites.length,
-        itemBuilder: (context, index) {
-          final recipe = FavoritesManager.favorites[index];
-          return ListTile(
-            title: Text(recipe),
-            trailing: IconButton(
-              icon: const Icon(Icons.remove),
-              onPressed: () {
-                FavoritesManager.removeFavorite(recipe);
+      body: Column(
+        children: [
+          DropdownButton<String>(
+            hint: const Text('Select a Day'),
+            value: selectedDay,
+            onChanged: (String? newValue) {
+              setState(() {
+                selectedDay = newValue;
+              });
+            },
+            items: <String>[
+              'Sunday',
+              'Monday',
+              'Tuesday',
+              'Wednesday',
+              'Thursday',
+              'Friday',
+              'Saturday'
+            ].map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (selectedDay != null) {
+                for (String recipe in FavoritesManager.favorites) {
+                  // Example: adding all favorites to the selected day
+                  MealPlanManager.addToMealPlan(selectedDay!, recipe);
+                }
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('$recipe removed from favorites!')),
+                  SnackBar(content: Text('Added to $selectedDay Meal Plan')),
                 );
-                // Refresh the screen after removing the item
-                (context as Element).rebuild();
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please select a day')),
+                );
+              }
+            },
+            child: const Text('Add to Meal Plan'),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: FavoritesManager.favorites.length,
+              itemBuilder: (context, index) {
+                final recipe = FavoritesManager.favorites[index];
+                return ListTile(
+                  title: Text(recipe),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.remove),
+                    onPressed: () {
+                      FavoritesManager.removeFavorite(recipe);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('$recipe removed from favorites!')),
+                      );
+                      setState(() {}); // Refresh the screen after removing the item
+                    },
+                  ),
+                );
               },
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
@@ -605,7 +655,7 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 }
-class FavoritesManager { //This manages list of saved recipe to favorites
+class FavoritesManager { //This manages list of saved recipe to favorites(Recipe to Fav)
   static final List<String> _favorites = [];
 
   static List<String> get favorites => _favorites;
@@ -620,3 +670,30 @@ class FavoritesManager { //This manages list of saved recipe to favorites
     _favorites.remove(recipe);
   }
 }
+
+class MealPlanManager {//this manages Fvorite Screen to Meal Plan Screen 
+  static final Map<String, List<String>> _mealPlans = {
+    'Sunday': [],
+    'Monday': [],
+    'Tuesday': [],
+    'Wednesday': [],
+    'Thursday': [],
+    'Friday': [],
+    'Saturday': [],
+  };
+
+  static List<String> getMealPlan(String day) {
+    return _mealPlans[day] ?? [];
+  }
+
+  static void addToMealPlan(String day, String recipe) {
+    if (_mealPlans[day] != null && !_mealPlans[day]!.contains(recipe)) {
+      _mealPlans[day]!.add(recipe);
+    }
+  }
+
+  static void removeFromMealPlan(String day, String recipe) {
+    _mealPlans[day]?.remove(recipe);
+  }
+}
+
