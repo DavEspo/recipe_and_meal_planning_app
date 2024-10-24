@@ -274,14 +274,7 @@ class HomePage extends StatelessWidget {
         title: const Text("Home Screen"),
         centerTitle: true,
         backgroundColor: Colors.red,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () {
-              _logout(context);  // Function to handle logout
-            },
-          )
-        ],
+        // Removed logout button from the AppBar
       ),
       body: Column(
         children: [
@@ -334,7 +327,7 @@ class HomePage extends StatelessWidget {
               ),
             ],
           ),
-          // Add Favorite and Settings buttons with different colors
+          // Add Favorite and Settings buttons in the same row
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -344,7 +337,7 @@ class HomePage extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => FavoriteScreen()),
+                      MaterialPageRoute(builder: (context) => const FavoriteScreen()),
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -411,6 +404,7 @@ class HomePage extends StatelessWidget {
 
 
 
+
 class RecipeScreen extends StatelessWidget {
   const RecipeScreen({super.key});
 
@@ -418,34 +412,44 @@ class RecipeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Recipe Screen'),
+        title: const Text('Recipe Screen'),
         centerTitle: true,
         backgroundColor: Colors.red,
       ),
       body: ListView(
-        scrollDirection: Axis.vertical,
         children: <Widget>[
-          const ListTile(title: Text("Salad")),
-          const ListTile(title: Text("Sandwich"), trailing: Icon(Icons.add)),
-          const ListTile(title: Text("Hamburger"), trailing: Icon(Icons.add)),
-          const ListTile(title: Text("Hot Dog"), trailing: Icon(Icons.add)),
-          const ListTile(title: Text("Fish"), trailing: Icon(Icons.add)),
-          const ListTile(title: Text("Shrimp"), trailing: Icon(Icons.add)),
-          const ListTile(title: Text("Tacos"), trailing: Icon(Icons.add)),
-          const ListTile(title: Text("Chicken Wings"), trailing: Icon(Icons.add)),
-          const ListTile(title: Text("Rice"), trailing: Icon(Icons.add)),
-          const ListTile(title: Text("Spaghetti"), trailing: Icon(Icons.add)),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text("Back to Home Screen"),
-          )
+          _buildRecipeTile(context, "Salad"),
+          _buildRecipeTile(context, "Sandwich"),
+          _buildRecipeTile(context, "Hamburger"),
+          _buildRecipeTile(context, "Hot Dog"),
+          _buildRecipeTile(context, "Fish"),
+          _buildRecipeTile(context, "Shrimp"),
+          _buildRecipeTile(context, "Tacos"),
+          _buildRecipeTile(context, "Chicken Wings"),
+          _buildRecipeTile(context, "Rice"),
+          _buildRecipeTile(context, "Spaghetti"),
         ],
       ),
     );
   }
+
+  // Helper method to create a recipe tile
+  Widget _buildRecipeTile(BuildContext context, String recipeName) {
+    return ListTile(
+      title: Text(recipeName),
+      trailing: IconButton(
+        icon: const Icon(Icons.add),
+        onPressed: () {
+          FavoritesManager.addFavorite(recipeName);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('$recipeName added to favorites!')),
+          );
+        },
+      ),
+    );
+  }
 }
+
 
 class MealPlanScreen extends StatelessWidget {
   const MealPlanScreen({super.key});
@@ -479,23 +483,34 @@ class FavoriteScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Favorite Screen'),
+        title: const Text('Favorite Recipes'),
         centerTitle: true,
         backgroundColor: Colors.red,
       ),
-      body: Column(
-        children: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text("Back to Home Screen"),
-          )
-        ],
+      body: ListView.builder(
+        itemCount: FavoritesManager.favorites.length,
+        itemBuilder: (context, index) {
+          final recipe = FavoritesManager.favorites[index];
+          return ListTile(
+            title: Text(recipe),
+            trailing: IconButton(
+              icon: const Icon(Icons.remove),
+              onPressed: () {
+                FavoritesManager.removeFavorite(recipe);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('$recipe removed from favorites!')),
+                );
+                // Refresh the screen after removing the item
+                (context as Element).rebuild();
+              },
+            ),
+          );
+        },
       ),
     );
   }
 }
+
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -519,5 +534,20 @@ class SettingsScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+class FavoritesManager { //This manages list of saved recipe to favorites
+  static final List<String> _favorites = [];
+
+  static List<String> get favorites => _favorites;
+
+  static void addFavorite(String recipe) {
+    if (!_favorites.contains(recipe)) {
+      _favorites.add(recipe);
+    }
+  }
+
+  static void removeFavorite(String recipe) {
+    _favorites.remove(recipe);
   }
 }
