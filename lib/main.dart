@@ -61,12 +61,12 @@ class WelcomePage extends StatelessWidget {
                   ),
                 );
               },
-              child: const Text("Go to Login"),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                 textStyle: const TextStyle(fontSize: 20),
                 backgroundColor: Colors.grey,
               ),
+              child: const Text("Go to Login"),
             ),
           ],
         ),
@@ -274,6 +274,14 @@ class HomePage extends StatelessWidget {
         title: const Text("Home Screen"),
         centerTitle: true,
         backgroundColor: Colors.red,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () {
+              _logout(context);  // Function to handle logout
+            },
+          )
+        ],
       ),
       body: Column(
         children: [
@@ -289,16 +297,16 @@ class HomePage extends StatelessWidget {
                       MaterialPageRoute(builder: (context) => RecipeScreen()),
                     );
                   },
-                  child: const Text(
-                    "Recipe Screen",
-                    style: TextStyle(color: Colors.white, fontSize: 25),
-                  ),
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                     fixedSize: const Size(175, 150),
                     backgroundColor: Colors.blue, // Color for Recipe Screen
+                  ),
+                  child: const Text(
+                    "Recipe Screen",
+                    style: TextStyle(color: Colors.white, fontSize: 25),
                   ),
                 ),
               ),
@@ -311,16 +319,16 @@ class HomePage extends StatelessWidget {
                       MaterialPageRoute(builder: (context) => MealPlanScreen()),
                     );
                   },
-                  child: const Text(
-                    "Meal Planning Screen",
-                    style: TextStyle(color: Colors.white, fontSize: 25),
-                  ),
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                     fixedSize: const Size(175, 150),
                     backgroundColor: Colors.green, // Color for Meal Planning Screen
+                  ),
+                  child: const Text(
+                    "Meal Planning Screen",
+                    style: TextStyle(color: Colors.white, fontSize: 25),
                   ),
                 ),
               ),
@@ -339,16 +347,16 @@ class HomePage extends StatelessWidget {
                       MaterialPageRoute(builder: (context) => FavoriteScreen()),
                     );
                   },
-                  child: const Text(
-                    "Favorite Screen",
-                    style: TextStyle(color: Colors.white, fontSize: 25),
-                  ),
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                     fixedSize: const Size(175, 150),
                     backgroundColor: Colors.orange, // Color for Favorite Screen
+                  ),
+                  child: const Text(
+                    "Favorite Screen",
+                    style: TextStyle(color: Colors.white, fontSize: 25),
                   ),
                 ),
               ),
@@ -361,10 +369,6 @@ class HomePage extends StatelessWidget {
                       MaterialPageRoute(builder: (context) => SettingsScreen()),
                     );
                   },
-                  child: const Text(
-                    "Settings Screen",
-                    style: TextStyle(color: Colors.white, fontSize: 25),
-                  ),
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -372,18 +376,44 @@ class HomePage extends StatelessWidget {
                     fixedSize: const Size(175, 150),
                     backgroundColor: Colors.purple, // Color for Settings Screen
                   ),
+                  child: const Text(
+                    "Settings Screen",
+                    style: TextStyle(color: Colors.white, fontSize: 25),
+                  ),
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 20),
+          // Logout button
+          ElevatedButton(
+            onPressed: () {
+              _logout(context);  // Call logout function
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red, // Logout button color
+            ),
+            child: const Text("Logout"),
           ),
         ],
       ),
     );
   }
+
+  // Logout function to navigate back to the LoginPage
+  void _logout(BuildContext context) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginPage(title: 'Login Screen')),
+    );
+  }
 }
 
 
+
 class RecipeScreen extends StatelessWidget {
+  const RecipeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -418,6 +448,8 @@ class RecipeScreen extends StatelessWidget {
 }
 
 class MealPlanScreen extends StatelessWidget {
+  const MealPlanScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -441,6 +473,8 @@ class MealPlanScreen extends StatelessWidget {
 }
 
 class FavoriteScreen extends StatelessWidget {
+  const FavoriteScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -464,6 +498,8 @@ class FavoriteScreen extends StatelessWidget {
 }
 
 class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
