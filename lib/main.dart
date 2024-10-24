@@ -428,6 +428,16 @@ class RecipeScreen extends StatelessWidget {
           _buildRecipeTile(context, "Chicken Wings"),
           _buildRecipeTile(context, "Rice"),
           _buildRecipeTile(context, "Spaghetti"),
+          _buildRecipeTile(context, "Chocolate Chip Cookies"),
+          _buildRecipeTile(context, "Broccoli"),
+          _buildRecipeTile(context, "Beef Stew"),
+          _buildRecipeTile(context, "Chicken Noodle Soup"),
+          _buildRecipeTile(context, "Beef Noodle Soup"),
+          _buildRecipeTile(context, "Pork Chops"),
+          _buildRecipeTile(context, "Scrambled Eggs"),
+          _buildRecipeTile(context, "Lasagna"),
+          _buildRecipeTile(context, "Mashed Potatoes"),
+          _buildRecipeTile(context, "Oatmeal"),
         ],
       ),
     );
@@ -464,17 +474,76 @@ class MealPlanScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
+          const SizedBox(height: 20), // Adds some space
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.all(16.0),
+              children: _buildDaySections(context), // Pass context here
+            ),
+          ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
             },
-            child: Text("Back to Home Screen"),
-          )
+            child: const Text("Back to Home Screen"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Build a section for each day
+  List<Widget> _buildDaySections(BuildContext context) { // Accept context
+    List<Widget> daySections = [];
+    List<String> favorites = FavoritesManager.favorites; // Get favorites
+
+    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+    for (String day in daysOfWeek) {
+      daySections.add(_buildDaySection(day, favorites, context)); // Pass context here
+    }
+    return daySections;
+  }
+
+  // Helper method to build each day's section
+  Widget _buildDaySection(String day, List<String> favorites, BuildContext context) { // Accept context
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
+        children: [
+          ListTile(
+            title: Text(day, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            subtitle: Text('Favorites for $day'),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: favorites.isNotEmpty
+                  ? favorites.map((recipe) {
+                      return ListTile(
+                        title: Text(recipe),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.remove),
+                          onPressed: () {
+                            FavoritesManager.removeFavorite(recipe);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('$recipe removed from favorites!')),
+                            );
+                          },
+                        ),
+                      );
+                    }).toList()
+                  : [const Text('No favorite recipes added.')], // Properly format the else case
+            ),
+          ),
         ],
       ),
     );
   }
 }
+
+
+
 
 class FavoriteScreen extends StatelessWidget {
   const FavoriteScreen({super.key});
