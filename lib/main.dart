@@ -643,18 +643,33 @@ class SettingsScreen extends StatelessWidget {
         backgroundColor: Colors.red,
       ),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
             },
             child: Text("Back to Home Screen"),
-          )
+          ),
+          SizedBox(height: 20), // Adding some space
+          ElevatedButton(
+            onPressed: () async {
+              // Call the logout functionality
+              await DatabaseHelper().logoutUser(); // Implement in DatabaseHelper
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => WelcomePage()), // Navigate to login screen
+              );
+            },
+            child: Text("DELETE ACCOUNT"),
+          ),
         ],
       ),
     );
   }
 }
+
+
 class FavoritesManager { //This manages list of saved recipe to favorites(Recipe to Fav)
   static final List<String> _favorites = [];
 
@@ -696,4 +711,3 @@ class MealPlanManager {//this manages Fvorite Screen to Meal Plan Screen
     _mealPlans[day]?.remove(recipe);
   }
 }
-

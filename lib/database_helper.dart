@@ -35,7 +35,7 @@ class DatabaseHelper {
       path,
       version: 1,
       onCreate: (db, version) async {
-        await db.execute('''
+        await db.execute(''' 
           CREATE TABLE users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             $columnFirstName TEXT,
@@ -62,5 +62,13 @@ class DatabaseHelper {
       where: '$columnEmail = ? AND $columnPassword = ?',
       whereArgs: [email, password],
     );
+  }
+
+  // Logout user by clearing user data
+  Future<void> logoutUser() async {
+    final db = await database;
+    
+    // Clear all users from the users table
+    await db.delete('users'); // This removes all users
   }
 }
