@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'database_helper.dart';
 
 void main() {
@@ -189,26 +190,26 @@ class _SignupPageState extends State<SignupPage> {
         DatabaseHelper.columnPassword: _passwordController.text,
       };
 
-      try {
-        final id = await dbHelper.insertUser(user);
-        if (id > 0) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Signup successful!')),
-          );
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const LoginPage(title: 'Login Screen')),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Error during signup.')),
-          );
-        }
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error: Could not sign up.')),
-        );
-      }
+      // try {
+      //   final id = await dbHelper.insertUser(user);
+      //   if (id > 0) {
+      //     ScaffoldMessenger.of(context).showSnackBar(
+      //       const SnackBar(content: Text('Signup successful!')),
+      //     );
+      //     Navigator.pushReplacement(
+      //       context,
+      //       MaterialPageRoute(builder: (context) => const LoginPage(title: 'Login Screen')),
+      //     );
+      //   } else {
+      //     ScaffoldMessenger.of(context).showSnackBar(
+      //       const SnackBar(content: Text('Error during signup.')),
+      //     );
+      //   }
+      // } catch (e) {
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     const SnackBar(content: Text('Error: Could not sign up.')),
+      //   );
+      // }
     }
   }
 
@@ -435,7 +436,6 @@ class Recipe extends StatefulWidget {
 }
 
 class RecipeScreen extends State<Recipe> {
-  // RecipeScreen({super.key});
   List<String> Meals = allMeals;
   final controller = TextEditingController();
 
@@ -448,15 +448,32 @@ class RecipeScreen extends State<Recipe> {
         backgroundColor: Colors.red,
       ),
       body:Column(
-        // mainAxisSize: MainAxisSize.max,
         children: [
+          SizedBox(
+            height: 5
+          ),
+          SizedBox(
+            width: 400,
+            child: Text(
+              '  Click on Meal to view Recipe',
+              style: TextStyle(fontSize: 20),
+              textAlign: TextAlign.left,
+            )
+          ),
           Container(
-            margin: EdgeInsets.fromLTRB(16, 16, 16, 16),
+            margin: EdgeInsets.fromLTRB(16, 5, 16, 16),
             child: TextField(
               controller: controller,
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search),
-                hintText: 'Book Title',
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.clear),
+                  onPressed: () {
+                    controller.clear();
+                    searchBook('');
+                  }
+                ),
+                hintText: 'Find Meal',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: const BorderSide(color: Colors.blue)
@@ -470,9 +487,11 @@ class RecipeScreen extends State<Recipe> {
               itemCount: Meals.length,
               itemBuilder: (context, index) {
                 final Meal = Meals[index];
-                return ListTile(
-                  title: _buildRecipeTile(context, Meal),
-                  onTap: () {}
+                return Container(
+                  child: _buildRecipeTile(context, Meal),
+                  decoration: BoxDecoration(
+                    border: Border.all(width: .05)
+                  )
                 );
               }
             ),
@@ -506,65 +525,592 @@ class RecipeScreen extends State<Recipe> {
           );
         },
       ),
+      onTap: () {
+        if (recipeName == 'Salad') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Salad()),
+          );
+        } else if (recipeName == 'Sandwich') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Sandwich()),
+          );
+        } else if (recipeName == 'Hamburger') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Hamburger()),
+          );
+        } else if (recipeName == 'Hot Dog') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => HotDog()),
+          );
+        } else if (recipeName == 'Fish') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Fish()),
+          );
+        } else if (recipeName == 'Shrimp') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Shrimp()),
+          );
+        } else if (recipeName == 'Tacos') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Tacos()),
+          );
+        } else if (recipeName == 'Chicken Wings') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ChickenWings()),
+          );
+        } else if (recipeName == 'Rice') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Rice()),
+          );
+        } else if (recipeName == 'Spaghetti') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Spaghetti()),
+          );
+        } else if (recipeName == 'Chocolate Chip Cookies') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ChocolateChipCookies()),
+          );
+        } else if (recipeName == 'Broccoli') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Broccoli()),
+          );
+        } else if (recipeName == 'Beef Stew') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => BeefStew()),
+          );
+        } else if (recipeName == 'Chicken Noodle Soup') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ChickenNoodleSoup()),
+          );
+        } else if (recipeName == 'Beef Noodle Soup') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => BeefNoodleSoup()),
+          );
+        } else if (recipeName == 'Pork Chops') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => PorkChops()),
+          );
+        } else if (recipeName == 'Scrambled Eggs') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ScrambledEggs()),
+          );
+        } else if (recipeName == 'Lasagna') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Lasagna()),
+          );
+        } else if (recipeName == 'Mashed Potatoes') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MashedPotatoes()),
+          );
+        } else if (recipeName == 'Oatmeal') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Oatmeal()),
+          );
+        }
+      },
     );
   }
 }
 
-class MySearchDelegate extends SearchDelegate {
-  List<String> searchResults= [
-    'Brazil',
-    'China',
-    'Mexico',
-    'Venezuela'
-  ];
-  
-  @override
-  Widget? buildLeading(BuildContext context) => IconButton(
-    icon: const Icon(Icons.arrow_back),
-    onPressed: () => close(context, null)
-  );
 
+class Salad extends StatelessWidget {
   @override
-  List<Widget>? buildActions(BuildContext context) => [
-    IconButton(
-      icon: Icon(Icons.clear),
-      onPressed: () {
-        if (query.isEmpty) {
-          close(context, null);
-        } else {
-          query = '';
-        }
-      },
-    )
-  ];
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Recipe for Salad'),
+        backgroundColor: const Color.fromARGB(255, 4, 242, 198),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('-Add lots of Lettuce.', style: TextStyle(fontSize: 25)),
+          Text('-Add some Spinach.', style: TextStyle(fontSize: 25)),
+          Text('-Add some Onions.', style: TextStyle(fontSize: 25)),
+          Text('-Add some Tomatoes.', style: TextStyle(fontSize: 25)),
+          Text('-Add some Grilled Chicken.', style: TextStyle(fontSize: 25)),
+          Text('-Add some Croutons.', style: TextStyle(fontSize: 25)),
+          Text('-Add some Dressing.', style: TextStyle(fontSize: 25)),
+          Text('-Mix it all.', style: TextStyle(fontSize: 25))
+        ],
+      )
+    );
+  }
+}
 
-  @override
-  Widget buildResults(BuildContext context) => Center(
-    child: Text(
-      query,
-      style: TextStyle(fontSize: 64, fontWeight: FontWeight.bold)
-    ),
-  );
 
+class Sandwich extends StatelessWidget {
   @override
-  Widget buildSuggestions(BuildContext context) {
-    List<String> suggestions = searchResults.where((searchResult) {
-      final result = searchResult.toLowerCase();
-      final input = query.toLowerCase();
-      return result.contains(input);
-    }).toList();
-    return ListView.builder(
-      itemCount: suggestions.length,
-      itemBuilder: (context, index) {
-        final suggestion = suggestions[index];
-        return ListTile(
-          title: Text(suggestion),
-          onTap: () {
-            query = suggestion;
-            showResults(context);
-          },
-        );
-      }
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Recipe for Sandwich'),
+        backgroundColor: const Color.fromARGB(255, 4, 242, 198),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('-Grab 2 slices of sandwich breads.', style: TextStyle(fontSize: 25)),
+          Text('-Add a little bit of mayonese on both \n breads', style: TextStyle(fontSize: 25)),
+          Text('-Put a slice of cheese on one of the \n breads.', style: TextStyle(fontSize: 25)),
+          Text('-Put a slice of ham on top of the \n cheese.', style: TextStyle(fontSize: 25)),
+          Text('-Add some lettuce on top of the \n ham.', style: TextStyle(fontSize: 25)),
+          Text('-Cook a medium piece of chicken \n (either fried or grilled).', style: TextStyle(fontSize: 25)),
+          Text('-Add the chicken to the sandwich \n and put the other bread on it as \n well.', style: TextStyle(fontSize: 25))
+        ],
+      )
+    );
+  }
+}
+
+class Hamburger extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Recipe for Hamburger'),
+        backgroundColor: const Color.fromARGB(255, 4, 242, 198),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('-Grab 2 pieces of Hamburger Bread.', style: TextStyle(fontSize: 25)),
+          Text('-Add some mayonese on both pieces of bread.', style: TextStyle(fontSize: 25)),
+          Text('-Put both pieces of bread on the grill.', style: TextStyle(fontSize: 25)),
+          Text('-Put a big piece of meat on the grill and let it cook for a while.', style: TextStyle(fontSize: 25)),
+          Text('-Take everything out of the grill.', style: TextStyle(fontSize: 25)),
+          Text('-Add the meat between the 2 pieces of bread.', style: TextStyle(fontSize: 25)),
+          Text('-Add lettuce, onions, tomato, mustard, and ketchup on the meat.', style: TextStyle(fontSize: 25))
+        ],
+      )
+    );
+  }
+}
+
+class HotDog extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Recipe for Hot Dog'),
+        backgroundColor: const Color.fromARGB(255, 4, 242, 198),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('-Grab a piece of Hot Dog bread and put it on the grill.', style: TextStyle(fontSize: 25)),
+          Text('-Put a sausage on the grill and let it cook for a good minute.', style: TextStyle(fontSize: 25)),
+          Text('-Grab the bread and put some mayonese on it.', style: TextStyle(fontSize: 25)),
+          Text('-Put the sausage in the bread.', style: TextStyle(fontSize: 25)),
+          Text('-Put ketchup, mustard, little pieces of onions, and little pieces of tomatoes on the Hot Dog.', style: TextStyle(fontSize: 25)),
+        ],
+      )
+    );
+  }
+}
+
+class Fish extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Recipe for Fish'),
+        backgroundColor: const Color.fromARGB(255, 4, 242, 198),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('-Put a pan on the stove and scrub some button on the pan.', style: TextStyle(fontSize: 25)),
+          Text('-Put some oil on the pan.', style: TextStyle(fontSize: 25)),
+          Text('-Add the fish on the pan and let it cook for a minute.', style: TextStyle(fontSize: 25)),
+          Text('-While the fish is cooking, add some onion powder, garlic powder, black pepper, and salt.', style: TextStyle(fontSize: 25)),
+          Text('-Take the fish out of the pan and it\'s ready.', style: TextStyle(fontSize: 25))
+        ],
+      )
+    );
+  }
+}
+
+class Shrimp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Recipe for Shrimp'),
+        backgroundColor: const Color.fromARGB(255, 4, 242, 198),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('-Peel the shrimp.', style: TextStyle(fontSize: 25)),
+          Text('-Grab a pan and add some butter and oil on it.', style: TextStyle(fontSize: 25)),
+          Text('-Add the shrimp to the pan and let it cook.', style: TextStyle(fontSize: 25)),
+          Text('-While the shrimp is cooking, add some onion powder, garlic powder, black pepper, and salt.', style: TextStyle(fontSize: 25)),
+          Text('-Take the shrimp out of the pan and it\'s ready.', style: TextStyle(fontSize: 25))
+        ],
+      )
+    );
+  }
+}
+
+class Tacos extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Recipe for Tacos'),
+        backgroundColor: const Color.fromARGB(255, 4, 242, 198),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('-Grab a pan and put some oil on it.', style: TextStyle(fontSize: 25)),
+          Text('-Grab some tortillas and place them on the pan.', style: TextStyle(fontSize: 25)),
+          Text('-Let the tortillas heat up.', style: TextStyle(fontSize: 25)),
+          Text('-In the meantime, marinate some meat.', style: TextStyle(fontSize: 25)),
+          Text('-Cook the marinated meat.', style: TextStyle(fontSize: 25)),
+          Text('-Take the tortillas out of the pan and add the meat to them.', style: TextStyle(fontSize: 25)),
+          Text('-Add onions, cilantro, and any sauce of your choice to the tacos.', style: TextStyle(fontSize: 25))
+        ],
+      )
+    );
+  }
+}
+
+class ChickenWings extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Recipe for Chicken Wings'),
+        backgroundColor: const Color.fromARGB(255, 4, 242, 198),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('-Get a pot and put it on a fire.', style: TextStyle(fontSize: 25)),
+          Text('-Add lots of oil, water, and salt to the pot.', style: TextStyle(fontSize: 25)),
+          Text('-Put the wings in the pot and let it sit there for a good minute.', style: TextStyle(fontSize: 25)),
+          Text('-Take the wings out of the pot and marinate them whichever flavor of your choice.', style: TextStyle(fontSize: 25)),
+          Text('-Put the wings back in the pot.', style: TextStyle(fontSize: 25)),
+          Text('-Take the wings out and they\'re ready.', style: TextStyle(fontSize: 25))
+        ],
+      )
+    );
+  }
+}
+
+class Rice extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Recipe for Rice'),
+        backgroundColor: const Color.fromARGB(255, 4, 242, 198),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('-Add rice to a pot.', style: TextStyle(fontSize: 25)),
+          Text('-Add water to the pot until it fills up.', style: TextStyle(fontSize: 25)),
+          Text('-Rinse out the pot.', style: TextStyle(fontSize: 25)),
+          Text('-Now put roughly the same amount of water as rice in the pot.', style: TextStyle(fontSize: 25)),
+          Text('-Cover the pot and put it in the stove and let it boil.', style: TextStyle(fontSize: 25)),
+          Text('-Turn off the stove, open the pot, and move the rice around.', style: TextStyle(fontSize: 25))
+        ],
+      )
+    );
+  }
+}
+
+class Spaghetti extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Recipe for Spaghetti'),
+        backgroundColor: const Color.fromARGB(255, 4, 242, 198),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('-Heat up some oil in a large pot.', style: TextStyle(fontSize: 25)),
+          Text('-Add the meat and cook it.', style: TextStyle(fontSize: 25)),
+          Text('-Add onions and cook them.', style: TextStyle(fontSize: 25)),
+          Text('-Add garlic, tomato paste, oregano, and red pepper flakes and stir it.', style: TextStyle(fontSize: 25)),
+          Text('-Stir some tomatoes with a little bit of salt.', style: TextStyle(fontSize: 25)),
+          Text('-Toss the pasta into the pot.', style: TextStyle(fontSize: 25)),
+          Text('-Take the pasta with the meat and sauce out of the pot.', style: TextStyle(fontSize: 25)),
+          Text('-Add some parmesan cheese on top of the pasta.', style: TextStyle(fontSize: 25)),
+        ],
+      )
+    );
+  }
+}
+
+class ChocolateChipCookies extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Recipe for Chocolate Chip Cookies'),
+        backgroundColor: const Color.fromARGB(255, 4, 242, 198),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('-Put flour, baking soda, cornstarch, and salt in a large bowl and mix it.', style: TextStyle(fontSize: 25)),
+          Text('-Grab a different medium bowl and mix some butter, sugar, egg, and vanilla.', style: TextStyle(fontSize: 25)),
+          Text('-Add chocolate chips to the medium bowl and mix a little.', style: TextStyle(fontSize: 25)),
+          Text('-Combine both bowls and mix.', style: TextStyle(fontSize: 25)),
+          Text('-Put the bowl with everything in the fridge for 2 hours.', style: TextStyle(fontSize: 25)),
+          Text('-Take the bowl out and grab the dough and roll little balls of dough.', style: TextStyle(fontSize: 25)),
+          Text('-Press the dough balls to make the form of a cookie. Place these in a sheet pan.', style: TextStyle(fontSize: 25)),
+          Text('-Put the sheet pan in the oven to bake the cookies.', style: TextStyle(fontSize: 25)),
+          Text('-Take the sheet pan out of the oven.', style: TextStyle(fontSize: 25))
+        ],
+      )
+    );
+  }
+}
+
+class Broccoli extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Recipe for Broccoli'),
+        backgroundColor: const Color.fromARGB(255, 4, 242, 198),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('-Cut the broccoli into little pieces.', style: TextStyle(fontSize: 25)),
+          Text('-Put the broccoli pieces into a sheet pan.', style: TextStyle(fontSize: 25)),
+          Text('-Place the sheet pan into the oven to bake the broccoli.', style: TextStyle(fontSize: 25)),
+          Text('-Take the sheet pan out of the oven.', style: TextStyle(fontSize: 25)),
+          Text('-Add a little bit of oil and lemon juice on the broccoli.', style: TextStyle(fontSize: 25))
+        ],
+      )
+    );
+  }
+}
+
+class BeefStew extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Recipe for Beef Stew'),
+        backgroundColor: const Color.fromARGB(255, 4, 242, 198),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('-Mix flour, garlic powder, salt, pepper, and beef.', style: TextStyle(fontSize: 25)),
+          Text('-Add oil into a pot and cook the beef and onions in there.', style: TextStyle(fontSize: 25)),
+          Text('-Add carrots, celery, and red wine to the pot and mix it.', style: TextStyle(fontSize: 25)),
+          Text('-Mix cornstarch with water and slowly add it to the boiling stew pot.', style: TextStyle(fontSize: 25)),
+          Text('-Stir in peas in the pot and add salt and pepper.', style: TextStyle(fontSize: 25))
+        ],
+      )
+    );
+  }
+}
+
+class ChickenNoodleSoup extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Recipe for Chicken Noodle Soup'),
+        backgroundColor: const Color.fromARGB(255, 4, 242, 198),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('-Add butter, diced celery and carrots to a pot and cook it.', style: TextStyle(fontSize: 25)),
+          Text('-Them add garlic to the pot and keep cooking.', style: TextStyle(fontSize: 25)),
+          Text('-Add chicken stock, red pepper, and salt to the pot.', style: TextStyle(fontSize: 25)),
+          Text('-Add broth to the pot and let it boil.', style: TextStyle(fontSize: 25)),
+          Text('-Add noodles to the pot and remove them once they\'re cooked just a little.', style: TextStyle(fontSize: 25)),
+          Text('-Add chicken meat to the pot and let it cook.', style: TextStyle(fontSize: 25))
+        ],
+      )
+    );
+  }
+}
+
+class BeefNoodleSoup extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Recipe for Beef Noodle Soup'),
+        backgroundColor: const Color.fromARGB(255, 4, 242, 198),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('-Add oil and mushrooms in a pot.', style: TextStyle(fontSize: 25)),
+          Text('-Cut meat into small pieces and add it to the pot.', style: TextStyle(fontSize: 25)),
+          Text('-Add wine to the pot.', style: TextStyle(fontSize: 25)),
+          Text('-Add butter, onions, carrots, and celery to the pot and cook it for a little bit.', style: TextStyle(fontSize: 25)),
+          Text('-Add garlic and soup seasoning.', style: TextStyle(fontSize: 25)),
+          Text('-Then add beef broth and let the pot boil.', style: TextStyle(fontSize: 25)),
+          Text('-Let the pot cool down and then serve.', style: TextStyle(fontSize: 25))
+        ],
+      )
+    );
+  }
+}
+
+class PorkChops extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Recipe for Pork Chops'),
+        backgroundColor: const Color.fromARGB(255, 4, 242, 198),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('-Season Pork Chops with salt.', style: TextStyle(fontSize: 25)),
+          Text('-Mix flour, chili powder, garlic powder, onion powder, smoked paprika, and black pepper in a small bowl.', style: TextStyle(fontSize: 25)),
+          Text('-Dry the pork chops.', style: TextStyle(fontSize: 25)),
+          Text('-Heat oil in a skillet and add the pork chops.', style: TextStyle(fontSize: 25)),
+          Text('-Take the pork chops out and they\'re ready to eat.', style: TextStyle(fontSize: 25))
+        ],
+      )
+    );
+  }
+}
+
+class ScrambledEggs extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Recipe for Scrambled Eggs'),
+        backgroundColor: const Color.fromARGB(255, 4, 242, 198),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('-Put a skillet on the stove.', style: TextStyle(fontSize: 25)),
+          Text('-Crack the eggs into a bowl and add milk.', style: TextStyle(fontSize: 25)),
+          Text('-Add a little oil and butter to the skillet.', style: TextStyle(fontSize: 25)),
+          Text('-Put the eggs in the skillet and mix.', style: TextStyle(fontSize: 25)),
+          Text('-Take the eggs out of the skilled and serve.', style: TextStyle(fontSize: 25))
+        ],
+      )
+    );
+  }
+}
+
+class Lasagna extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Recipe for Lasagna'),
+        backgroundColor: const Color.fromARGB(255, 4, 242, 198),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('-Cook ground beef and sausage.', style: TextStyle(fontSize: 25)),
+          Text('-Boil large pot of salted pasta water.', style: TextStyle(fontSize: 25)),
+          Text('-Spread some meat sauce on the bottom of a casserole dish.', style: TextStyle(fontSize: 25)),
+          Text('-Spread ricotta cheese over the noodles.', style: TextStyle(fontSize: 25)),
+          Text('-Top with more noodles, ricotta cheese, and meat sauce.', style: TextStyle(fontSize: 25)),
+          Text('-Repeat the previous step again.', style: TextStyle(fontSize: 25)),
+          Text('-Top with Mozzarella cheese.', style: TextStyle(fontSize: 25)),
+          Text('-Bake in the oven.', style: TextStyle(fontSize: 25)),
+          Text('-Take the lasagna out of the oven. It\'s ready to eat.', style: TextStyle(fontSize: 25)),
+        ],
+      )
+    );
+  }
+}
+
+class MashedPotatoes extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Recipe for Mashed Potatoes'),
+        backgroundColor: const Color.fromARGB(255, 4, 242, 198),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('-', style: TextStyle(fontSize: 25)),
+          Text('-', style: TextStyle(fontSize: 25)),
+          Text('-', style: TextStyle(fontSize: 25))
+        ],
+      )
+    );
+  }
+}
+
+class Oatmeal extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Recipe for Oatmeal'),
+        backgroundColor: const Color.fromARGB(255, 4, 242, 198),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('-', style: TextStyle(fontSize: 25)),
+          Text('-', style: TextStyle(fontSize: 25)),
+          Text('-', style: TextStyle(fontSize: 25))
+        ],
+      )
     );
   }
 }
