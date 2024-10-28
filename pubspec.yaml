@@ -16,7 +16,7 @@ dependencies:
   path: ^1.8.0       # For handling file system paths
   path_provider: ^2.0.9  # For accessing application documents directory
   cupertino_icons: ^1.0.8
-
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -24,3 +24,25 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - Assets/Salad.jpeg
+    - Assets/Sandwich.jpg
+    - Assets/Hamburger.jpeg
+    - Assets/HotDog.jpg
+    - Assets/Fish.jpg
+    - Assets/Shrimp.jpg
+    - Assets/Tacos.jpg
+    - Assets/ChickenWings.jpg
+    - Assets/Rice.jpg
+    - Assets/Spaghetti.jpg
+    - Assets/ChocolateChipCookies.jpg
+    - Assets/Broccoli.webp
+    - Assets/BeefStew.avif
+    - Assets/ChickenNoodleSoup.avif
+    - Assets/BeefNoodleSoup.webp
+    - Assets/PorkChops.webp
+    - Assets/ScrambledEggs.jpg
+    - Assets/Lasagna.jpg
+    - Assets/MashedPotatoes.jpg
+    - Assets/Oatmeal.jpg
